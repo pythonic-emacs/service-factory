@@ -1,6 +1,26 @@
+
+.. |travis| image:: https://travis-ci.org/proofit404/service-factory.png
+    :target: https://travis-ci.org/proofit404/service-factory
+    :alt: Build Status
+
+.. |coveralls| image:: https://coveralls.io/repos/proofit404/service-factory/badge.png
+    :target: https://coveralls.io/r/proofit404/service-factory
+    :alt: Coverage Status
+
+.. |requires| image:: https://requires.io/github/proofit404/service-factory/requirements.svg
+    :target: https://requires.io/github/proofit404/service-factory/requirements
+    :alt: Requirements Status
+
+.. |landscape| image:: https://landscape.io/github/proofit404/service-factory/master/landscape.svg
+    :target: https://landscape.io/github/proofit404/service-factory/master
+    :alt: Code Health
+
 ===============
 service-factory
 ===============
+
+|travis| |coveralls| |requires| |landscape|
+
 JSON RPC service factory for Python.
 
 TODO
