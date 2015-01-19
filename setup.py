@@ -4,7 +4,7 @@ import service_factory
 readme = open('README.rst').read()
 
 setup(name='service_factory',
-      version=service_factory.__init__,
+      version=service_factory.__version__,
       url='https://github.com/proofit404/service-factory',
       description='JSON RPC service factory for Python.',
       long_description=readme,
