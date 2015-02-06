@@ -11,3 +11,13 @@ def test_call():
                   'params': [1, 2], 'id': 1})
     expected = {'jsonrpc': '2.0', 'result': 3, 'id': 1}
     assert expected == loads(service(args))
+
+
+def test_dict_app():
+    """Check we can define service as a dictionary."""
+
+    service = Service({'add': lambda a, b: a + b})
+    args = dumps({'jsonrpc': '2.0', 'method': 'add',
+                  'params': [1, 2], 'id': 1})
+    expected = {'jsonrpc': '2.0', 'result': 3, 'id': 1}
+    assert expected == loads(service(args))

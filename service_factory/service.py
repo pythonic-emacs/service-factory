@@ -16,14 +16,16 @@ class Service(object):
 
     def __init__(self, app):
 
-        self.app = app
+        if isinstance(app, list):
+            self.app = dict((method.__name__, method) for method in app)
+        elif isinstance(app, dict):
+            self.app = app
 
     def __call__(self, arg):
         """Perform jsonrpc call."""
 
         args = loads(arg)
-        method = next(func for func in self.app
-                      if func.__name__ == args['method'])
+        method = self.app[args['method']]
         result = method(*args['params'])
         reply = {'jsonrpc': '2.0', 'id': args['id'], 'result': result}
         return dumps(reply)
