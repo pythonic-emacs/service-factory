@@ -24,7 +24,10 @@ class Service(object):
     def __call__(self, arg):
         """Perform jsonrpc call."""
 
-        args = loads(arg)
+        try:
+            args = loads(arg)
+        except ValueError:
+            return 400, ''
         method = self.app[args['method']]
         result = method(*args['params'])
         reply = {'jsonrpc': '2.0', 'id': args['id'], 'result': result}

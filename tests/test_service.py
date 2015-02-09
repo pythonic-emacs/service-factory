@@ -21,3 +21,11 @@ def test_dict_app():
                   'params': [1, 2], 'id': 1})
     expected = {'jsonrpc': '2.0', 'result': 3, 'id': 1}
     assert expected == loads(service(args))
+
+
+def test_invalid_request():
+    """Check we process invalid requests correctly."""
+
+    service = Service({'add': lambda a, b: a + b})
+    args = """{'method': 'name' """
+    assert (400, '') == service(args)
