@@ -29,6 +29,22 @@ class Service(object):
         except ValueError:
             return 400, ''
         method = self.app[args['method']]
-        result = method(*args['params'])
-        reply = {'jsonrpc': '2.0', 'id': args['id'], 'result': result}
-        return 200, dumps(reply)
+        try:
+            result = method(*args['params'])
+        except Exception as error:
+            response = dumps({
+                'jsonrpc': '2.0',
+                'id': args['id'],
+                'error': {
+                    'code': 1,
+                    'message': repr(error),
+                },
+            })
+            return 500, response
+        else:
+            response = {
+                'jsonrpc': '2.0',
+                'id': args['id'],
+                'result': result,
+            }
+            return 200, dumps(response)

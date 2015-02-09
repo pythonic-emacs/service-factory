@@ -30,4 +30,29 @@ def test_invalid_request():
 
     service = Service({'add': lambda a, b: a + b})
     args = """{'method': 'name' """
-    assert (400, '') == service(args)
+    assert (400, '') == service(args)  # FIXME: Correct response body
+    # accordingly to specification.
+
+
+def test_application_error():
+    """Check service can handle application errors."""
+
+    def err():
+        raise Exception('We are here.')
+    service = Service([err])
+    args = dumps({'jsonrpc': '2.0', 'method': 'err', 'params': [], 'id': 1})
+    expected = {
+        'jsonrpc': '2.0',
+        'error': {
+            'code': 1,
+            'message': "Exception('We are here.',)",
+        },
+        'id': 1,
+    }
+    response_code, response_body = service(args)
+    assert (500, expected) == (response_code, loads(response_body))
+
+
+# TODO: log traceback.
+# TODO: validate jsonrpc request.
+# TODO: unknown method.
