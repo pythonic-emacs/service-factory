@@ -10,7 +10,8 @@ def test_call():
     args = dumps({'jsonrpc': '2.0', 'method': 'add',
                   'params': [1, 2], 'id': 1})
     expected = {'jsonrpc': '2.0', 'result': 3, 'id': 1}
-    assert expected == loads(service(args))
+    response_code, response_body = service(args)
+    assert (200, expected) == (response_code, loads(response_body))
 
 
 def test_dict_app():
@@ -20,7 +21,8 @@ def test_dict_app():
     args = dumps({'jsonrpc': '2.0', 'method': 'add',
                   'params': [1, 2], 'id': 1})
     expected = {'jsonrpc': '2.0', 'result': 3, 'id': 1}
-    assert expected == loads(service(args))
+    response_code, response_body = service(args)
+    assert (200, expected) == (response_code, loads(response_body))
 
 
 def test_invalid_request():

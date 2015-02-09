@@ -31,4 +31,4 @@ class Service(object):
         method = self.app[args['method']]
         result = method(*args['params'])
         reply = {'jsonrpc': '2.0', 'id': args['id'], 'result': result}
-        return dumps(reply)
+        return 200, dumps(reply)
