@@ -2,27 +2,65 @@ from service_factory.service import Service
 from json import loads, dumps
 
 
+# Helpers.
+
+def check_response(response, status_code, expected_body):
+    """Verify response against given arguments.
+    Check jsonrpc specification compilance."""
+
+    code, body = response
+    reply = loads(body)
+    assert code == status_code
+    assert reply['jsonrpc'] == '2.0'
+    assert 'id' in reply
+    assert 'result' in reply or 'error' in reply
+    assert 'error' not in reply if 'result' in reply else True
+    assert 'result' not in reply if 'error' in reply else True
+    assert reply == expected_body
+
+
+# Tests.
+
+
 def test_call():
     """Check if we can call the service."""
     def add(a, b):
         return a + b
     service = Service([add])
-    args = dumps({'jsonrpc': '2.0', 'method': 'add',
-                  'params': [1, 2], 'id': 1})
-    expected = {'jsonrpc': '2.0', 'result': 3, 'id': 1}
-    response_code, response_body = service(args)
-    assert (200, expected) == (response_code, loads(response_body))
+    args = dumps({
+        'jsonrpc': '2.0',
+        'method': 'add',
+        'params': [1, 2],
+        'id': 1
+    })
+    check_response(
+        service(args),
+        200,
+        {
+            'jsonrpc': '2.0',
+            'result': 3,
+            'id': 1
+        })
 
 
 def test_dict_app():
     """Check we can define service as a dictionary."""
 
     service = Service({'add': lambda a, b: a + b})
-    args = dumps({'jsonrpc': '2.0', 'method': 'add',
-                  'params': [1, 2], 'id': 1})
-    expected = {'jsonrpc': '2.0', 'result': 3, 'id': 1}
-    response_code, response_body = service(args)
-    assert (200, expected) == (response_code, loads(response_body))
+    args = dumps({
+        'jsonrpc': '2.0',
+        'method': 'add',
+        'params': [1, 2],
+        'id': 1
+    })
+    check_response(
+        service(args),
+        200,
+        {
+            'jsonrpc': '2.0',
+            'result': 3,
+            'id': 1
+        })
 
 
 def test_invalid_request():
@@ -30,8 +68,17 @@ def test_invalid_request():
 
     service = Service({'add': lambda a, b: a + b})
     args = """{'method': 'name' """
-    assert (400, '') == service(args)  # FIXME: Correct response body
-    # accordingly to specification.
+    check_response(
+        service(args),
+        400,
+        {
+            'jsonrpc': '2.0',
+            'error': {
+                'code': -32700,
+                'message': 'Parse error',
+            },
+            'id': None,
+        })
 
 
 def test_application_error():
@@ -41,18 +88,25 @@ def test_application_error():
         raise Exception('We are here.')
     service = Service([err])
     args = dumps({'jsonrpc': '2.0', 'method': 'err', 'params': [], 'id': 1})
-    expected = {
-        'jsonrpc': '2.0',
-        'error': {
-            'code': 1,
-            'message': "Exception('We are here.',)",
-        },
-        'id': 1,
-    }
-    response_code, response_body = service(args)
-    assert (500, expected) == (response_code, loads(response_body))
+    check_response(
+        service(args),
+        500,
+        {
+            'jsonrpc': '2.0',
+            'error': {
+                'code': -32000,
+                'message': 'Server error',
+                'data': "Exception('We are here.',)",
+            },
+            'id': 1,
+        })
 
 
 # TODO: log traceback.
 # TODO: validate jsonrpc request.
 # TODO: unknown method.
+# TODO: process all errors codes.
+# TODO: batch processing.
+# TODO: --> {"jsonrpc": "2.0", "method": "foobar", "id": "1"}
+#       <-- {"jsonrpc": "2.0", "error": {"code": -32601,
+#            "message": "Method not found"}, "id": "1"}

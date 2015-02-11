@@ -27,7 +27,15 @@ class Service(object):
         try:
             args = loads(arg)
         except ValueError:
-            return 400, ''
+            response = dumps({
+                'jsonrpc': '2.0',
+                'id': None,
+                'error': {
+                    'code': -32700,
+                    'message': 'Parse error',
+                },
+            })
+            return 400, response
         method = self.app[args['method']]
         try:
             result = method(*args['params'])
@@ -36,8 +44,9 @@ class Service(object):
                 'jsonrpc': '2.0',
                 'id': args['id'],
                 'error': {
-                    'code': 1,
-                    'message': repr(error),
+                    'code': -32000,
+                    'message': 'Server error',
+                    'data': repr(error),
                 },
             })
             return 500, response
