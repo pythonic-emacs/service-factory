@@ -36,7 +36,18 @@ class Service(object):
                 },
             })
             return 400, response
-        method = self.app[args['method']]
+        try:
+            method = self.app[args['method']]
+        except KeyError:
+            response = dumps({
+                'jsonrpc': '2.0',
+                'error': {
+                    'code': -32601,
+                    'message': 'Method not found',
+                },
+                'id': args['id'],
+            })
+            return 400, response
         try:
             result = method(*args['params'])
         except Exception as error:
@@ -51,9 +62,9 @@ class Service(object):
             })
             return 500, response
         else:
-            response = {
+            response = dumps({
                 'jsonrpc': '2.0',
                 'id': args['id'],
                 'result': result,
-            }
-            return 200, dumps(response)
+            })
+            return 200, response

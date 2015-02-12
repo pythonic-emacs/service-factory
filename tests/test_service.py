@@ -4,6 +4,7 @@ from json import loads, dumps
 
 # Helpers.
 
+
 def check_response(response, status_code, expected_body):
     """Verify response against given arguments.
     Check jsonrpc specification compilance."""
@@ -31,7 +32,7 @@ def test_call():
         'jsonrpc': '2.0',
         'method': 'add',
         'params': [1, 2],
-        'id': 1
+        'id': 1,
     })
     check_response(
         service(args),
@@ -51,7 +52,7 @@ def test_dict_app():
         'jsonrpc': '2.0',
         'method': 'add',
         'params': [1, 2],
-        'id': 1
+        'id': 1,
     })
     check_response(
         service(args),
@@ -102,11 +103,30 @@ def test_application_error():
         })
 
 
+def test_method_not_found():
+    """Service must handle unknown method requests."""
+
+    service = Service({})
+    args = dumps({
+        'jsonrpc': '2.0',
+        'method': 'add',
+        'params': [1, 2],
+        'id': 1,
+    })
+    check_response(
+        service(args),
+        400,
+        {
+            'jsonrpc': '2.0',
+            'error': {
+                'code': -32601,
+                'message': 'Method not found',
+            },
+            'id': 1,
+        })
+
+
 # TODO: log traceback.
 # TODO: validate jsonrpc request.
-# TODO: unknown method.
 # TODO: process all errors codes.
 # TODO: batch processing.
-# TODO: --> {"jsonrpc": "2.0", "method": "foobar", "id": "1"}
-#       <-- {"jsonrpc": "2.0", "error": {"code": -32601,
-#            "message": "Method not found"}, "id": "1"}
