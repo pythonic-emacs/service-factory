@@ -38,7 +38,7 @@ Service factory in a nutshell:
 
     def mul(one, two):
         """Multiply two numbers."""
-          return one * two
+        return one * two
 
     app = [add, mul]
 
