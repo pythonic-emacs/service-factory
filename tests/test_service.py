@@ -67,8 +67,8 @@ def test_dict_app():
         })
 
 
-def test_invalid_request():
-    """Check we process invalid requests correctly."""
+def test_parse_error():
+    """Check we can process parse errors correctly."""
 
     service = Service({'add': lambda a, b: a + b})
     args = """{'method': 'name' """
@@ -100,7 +100,7 @@ def test_application_error():
             'error': {
                 'code': -32000,
                 'message': 'Server error',
-                'data': "Exception('We are here.',)",
+                'data': repr(Exception('We are here.')),
             },
             'id': 1,
         })
@@ -129,7 +129,7 @@ def test_method_not_found():
         })
 
 
-def test_dictionary_params():
+def test_dict_params():
     """Check we can use dictionary in params field."""
 
     service = Service({'add': lambda x, y: x + y})
@@ -152,7 +152,31 @@ def test_dictionary_params():
         })
 
 
+def test_invalid_request():
+    """Check we can process invalid requests correctly"""
+
+    service = Service({'add': lambda x, y: x + y})
+    args = dumps({
+        'jsonrpc': '2.0',
+        'method': 1,
+        'params': 'bar',
+    })
+    check_response(
+        service(args),
+        400,
+        {
+            'jsonrpc': '2.0',
+            'error': {
+                'code': -32600,
+                'message': 'Invalid Request',
+                'data': repr(
+                    AssertionError(
+                        'Incorrect name of the method to be invoked')),
+            },
+            'id': None,
+        })
+
+
 # TODO: log traceback.
-# TODO: validate jsonrpc request.
 # TODO: process all errors codes.
 # TODO: batch processing.

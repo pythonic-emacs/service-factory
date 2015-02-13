@@ -43,6 +43,11 @@ class Service(object):
             return parse_error()
 
         try:
+            self.validate(args)
+        except (AssertionError, KeyError) as error:
+            return invalid_request(error)
+
+        try:
             method = self.app[args['method']]
         except KeyError:
             return method_not_found(args['id'])
@@ -62,6 +67,36 @@ class Service(object):
         })
         return 200, response
 
+    def validate(self, request):
+        """Validate JSON-RPC request.
+
+        :param request: RPC request object
+        :type request: dict
+
+        """
+
+        import six
+
+        correct_version = request['jsonrpc'] == '2.0'
+        error = 'Incorrect version of the JSON-RPC protocol'
+        assert correct_version, error
+
+        correct_method = isinstance(request['method'], six.string_types)
+        error = 'Incorrect name of the method to be invoked'
+        assert correct_method, error
+
+        if 'params' in request:
+            correct_params = isinstance(request['params'], (list, dict))
+            error = 'Incorrect parameter values'
+            assert correct_params, error
+
+        if 'id' in request:
+            correct_id = isinstance(
+                request['id'],
+                (six.string_types, int, None))
+            error = 'Incorrect identifier'
+            assert correct_id, error
+
 
 def parse_error():
     """JSON-RPC parse error."""
@@ -72,6 +107,26 @@ def parse_error():
         'error': {
             'code': -32700,
             'message': 'Parse error',
+        },
+    })
+    return 400, response
+
+
+def invalid_request(error):
+    """JSON-RPC invalid request error.
+
+    :param error: request error
+    :type error: Exception
+
+    """
+
+    response = dumps({
+        'jsonrpc': '2.0',
+        'id': None,
+        'error': {
+            'code': -32600,
+            'message': 'Invalid Request',
+            'data': repr(error),
         },
     })
     return 400, response
