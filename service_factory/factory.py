@@ -17,7 +17,7 @@ from .service import Service
 
 def service_factory(app, server_cls=BaseHTTPServer,
                     host='localhost', port='auto',
-                    allowed_hosts={}):
+                    allowed_hosts=set()):
     """Create service, start server."""
 
     service = Service(app)
