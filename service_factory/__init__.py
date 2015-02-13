@@ -8,6 +8,9 @@
     :license: GPL3, see LICENSE for more details.
 """
 
+from __future__ import (
+    absolute_import, unicode_literals, division, print_function)
+
 from .factory import service_factory
 
 __all__ = ['__version__', '__author__', '__email__', '__license__',

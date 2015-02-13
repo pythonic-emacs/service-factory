@@ -1,5 +1,8 @@
-from service_factory.service import Service
+from __future__ import (
+    absolute_import, unicode_literals, division, print_function)
 from json import loads, dumps
+
+from service_factory.service import Service
 
 
 # Helpers.
