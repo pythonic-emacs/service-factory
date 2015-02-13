@@ -27,44 +27,76 @@ class Service(object):
         try:
             args = loads(arg)
         except ValueError:
-            response = dumps({
-                'jsonrpc': '2.0',
-                'id': None,
-                'error': {
-                    'code': -32700,
-                    'message': 'Parse error',
-                },
-            })
-            return 400, response
+            return parse_error()
+
         try:
             method = self.app[args['method']]
         except KeyError:
-            response = dumps({
-                'jsonrpc': '2.0',
-                'error': {
-                    'code': -32601,
-                    'message': 'Method not found',
-                },
-                'id': args['id'],
-            })
-            return 400, response
+            return method_not_found(args['id'])
+
         try:
             result = method(*args['params'])
         except Exception as error:
-            response = dumps({
-                'jsonrpc': '2.0',
-                'id': args['id'],
-                'error': {
-                    'code': -32000,
-                    'message': 'Server error',
-                    'data': repr(error),
-                },
-            })
-            return 500, response
-        else:
-            response = dumps({
-                'jsonrpc': '2.0',
-                'id': args['id'],
-                'result': result,
-            })
-            return 200, response
+            return server_error(args['id'], error)
+
+        response = dumps({
+            'jsonrpc': '2.0',
+            'id': args['id'],
+            'result': result,
+        })
+        return 200, response
+
+
+def parse_error():
+    """JSON-RPC parse error."""
+
+    response = dumps({
+        'jsonrpc': '2.0',
+        'id': None,
+        'error': {
+            'code': -32700,
+            'message': 'Parse error',
+        },
+    })
+    return 400, response
+
+
+def method_not_found(id):
+    """JSON-RPC method not found error.
+
+    :param id: JSON-RPC request id
+    :type id: int or str or None
+
+    """
+
+    response = dumps({
+        'jsonrpc': '2.0',
+        'id': id,
+        'error': {
+            'code': -32601,
+            'message': 'Method not found',
+        },
+    })
+    return 400, response
+
+
+def server_error(id, error):
+    """JSON-RPC server error.
+
+    :param id: JSON-RPC request id
+    :type id: int or str or None
+    :param error: server error
+    :type error: Exception
+
+    """
+
+    response = dumps({
+        'jsonrpc': '2.0',
+        'id': id,
+        'error': {
+            'code': -32000,
+            'message': 'Server error',
+            'data': repr(error),
+        },
+    })
+    return 500, response
