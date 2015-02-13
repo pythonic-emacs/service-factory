@@ -15,6 +15,12 @@ class Service(object):
     """Base Service.  Provide application method access."""
 
     def __init__(self, app):
+        """Service constructor.
+
+        :param app: application definition
+        :type app: list of callable, dict of callable
+
+        """
 
         if isinstance(app, list):
             self.app = dict((method.__name__, method) for method in app)
@@ -22,7 +28,12 @@ class Service(object):
             self.app = app
 
     def __call__(self, arg):
-        """Perform jsonrpc call."""
+        """Perform jsonrpc call.
+
+        :param arg: JSON-RPC request body
+        :type arg: str
+
+        """
 
         try:
             args = loads(arg)
