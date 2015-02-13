@@ -46,7 +46,10 @@ class Service(object):
             return method_not_found(args['id'])
 
         try:
-            result = method(*args['params'])
+            if isinstance(args['params'], dict):
+                result = method(**args['params'])
+            else:
+                result = method(*args['params'])
         except Exception as error:
             return server_error(args['id'], error)
 

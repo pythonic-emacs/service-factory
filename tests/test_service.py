@@ -126,6 +126,29 @@ def test_method_not_found():
         })
 
 
+def test_dictionary_params():
+    """Check we can use dictionary in params field."""
+
+    service = Service({'add': lambda x, y: x + y})
+    args = dumps({
+        'jsonrpc': '2.0',
+        'method': 'add',
+        'params': {
+            'x': 1,
+            'y': 2,
+        },
+        'id': 1,
+    })
+    check_response(
+        service(args),
+        200,
+        {
+            'jsonrpc': '2.0',
+            'result': 3,
+            'id': 1
+        })
+
+
 # TODO: log traceback.
 # TODO: validate jsonrpc request.
 # TODO: process all errors codes.
