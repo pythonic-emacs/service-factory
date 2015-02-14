@@ -70,6 +70,9 @@ application:
 TODO
 ----
 
+* log traceback
+* process all errors codes
+* batch processing
 * WSGI support
 * customizable message for port number report
 * customizable server classes

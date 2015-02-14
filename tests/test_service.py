@@ -175,8 +175,3 @@ def test_invalid_request():
             },
             'id': None,
         })
-
-
-# TODO: log traceback.
-# TODO: process all errors codes.
-# TODO: batch processing.
