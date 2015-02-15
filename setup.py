@@ -1,10 +1,9 @@
 from setuptools import setup, find_packages
-import service_factory
 
 readme = open('README.rst').read()
 
 setup(name='service_factory',
-      version=service_factory.__version__,
+      version='0.1.0',
       url='https://github.com/proofit404/service-factory',
       description='JSON RPC service factory for Python.',
       long_description=readme,

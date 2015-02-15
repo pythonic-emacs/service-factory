@@ -12,6 +12,8 @@ from __future__ import (
     absolute_import, unicode_literals, division, print_function)
 from json import loads, dumps
 
+import six
+
 
 class Service(object):
     """Base Service.  Provide application method access."""
@@ -74,8 +76,6 @@ class Service(object):
         :type request: dict
 
         """
-
-        import six
 
         correct_version = request['jsonrpc'] == '2.0'
         error = 'Incorrect version of the JSON-RPC protocol'
