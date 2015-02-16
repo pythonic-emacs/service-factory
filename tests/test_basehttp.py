@@ -1,24 +1,21 @@
 from __future__ import (
     absolute_import, unicode_literals, division, print_function)
+from socket import socket
 
-from service_factory.basehttp import BaseHTTPServer
+import pytest
 
-
-# Helpers.
-
-
-def process_request(request):
-    """Process single request on given server."""
-
-    response = BaseHTTPServer.handler.process_request(request)
-    return response
+from service_factory.basehttp import HTTPRequestHandler, HTTPServiceProvider
 
 
-# Tests.
-
-
+@pytest.skip('Not work yet')
 def test_post_request():
     """Check server can handle single post request."""
 
-    # response = process_request()  # TODO: Write real test here.
-    assert True
+    echo_service = lambda x: x
+    server = HTTPServiceProvider(
+        echo_service,
+        ('localhost', 8888),
+        HTTPRequestHandler,
+        bind_and_activate=False)
+    request = socket()
+    server.process_request(request, 'localhost')

@@ -31,8 +31,9 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         if content_len is not None:
             data = self.rfile.read(int(content_len))
             data = data.decode('utf-8')
-            status, response = self.process_request(data)
+            status, response = self.server.service(data)
         else:
+            # Fixme: generate JSON-RPC response.
             status, response = 400, 'Missing content-length header'
 
         response = response.encode('utf-8')
@@ -41,15 +42,18 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(response)
 
-    def process_request(self, request):
-        response = True
-        return response
+
+class HTTPServiceProvider(HTTPServer):
+    """Base HTTP service provider."""
+
+    def __init__(self, service, *args, **kwargs):
+
+        self.service = service
+        return super(HTTPServiceProvider, self).__init__(*args, **kwargs)
 
 
 class BaseHTTPServer(object):
     """Service provider based on BaseHTTPHandler."""
-
-    handler = HTTPRequestHandler
 
     def __init__(self, service, host, port, allowed_hosts):
 
