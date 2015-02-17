@@ -12,7 +12,7 @@ from __future__ import (
     absolute_import, unicode_literals, division, print_function)
 try:
     from http.server import BaseHTTPRequestHandler, HTTPServer
-except:
+except ImportError:
     from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
 
@@ -49,7 +49,7 @@ class HTTPServiceProvider(HTTPServer):
     def __init__(self, service, *args, **kwargs):
 
         self.service = service
-        return super(HTTPServiceProvider, self).__init__(*args, **kwargs)
+        super(HTTPServiceProvider, self).__init__(*args, **kwargs)
 
 
 class BaseHTTPServer(object):
