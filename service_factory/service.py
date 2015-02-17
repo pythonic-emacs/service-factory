@@ -14,6 +14,9 @@ from json import loads, dumps
 
 import six
 
+from .errors import (
+    invalid_request, method_not_found, parse_error, server_error)
+
 
 class Service(object):
     """Base Service.  Provide application method access."""
@@ -36,38 +39,31 @@ class Service(object):
 
         :param arg: JSON-RPC request body
         :type arg: str
+        :raises: ServiceException
+
+        """
+
+        args = self.load_args(arg)
+        self.validate(args)
+        method = self.get_method(args)
+        result = self.apply(method, args)
+        response = self.make_response(args, result)
+        return 200, response
+
+    def load_args(self, arg):
+        """Loads service args from string.
+
+        :param arg: Request body
+        :raises: ServiceException
 
         """
 
         try:
             args = loads(arg)
         except ValueError:
-            return parse_error()
-
-        try:
-            self.validate(args)
-        except (AssertionError, KeyError) as error:
-            return invalid_request(error)
-
-        try:
-            method = self.app[args['method']]
-        except KeyError:
-            return method_not_found(args['id'])
-
-        try:
-            if isinstance(args['params'], dict):
-                result = method(**args['params'])
-            else:
-                result = method(*args['params'])
-        except Exception as error:
-            return server_error(args['id'], error)
-
-        response = dumps({
-            'jsonrpc': '2.0',
-            'id': args['id'],
-            'result': result,
-        })
-        return 200, response
+            parse_error()
+        else:
+            return args
 
     def validate(self, request):
         """Validate JSON-RPC request.
@@ -77,18 +73,38 @@ class Service(object):
 
         """
 
+        try:
+            self.validate_version(request)
+            self.validate_method(request)
+            self.validate_params(request)
+            self.validate_id(request)
+        except (AssertionError, KeyError) as error:
+            invalid_request(error)
+
+    def validate_version(self, request):
+        """Validate request version."""
+
         correct_version = request['jsonrpc'] == '2.0'
         error = 'Incorrect version of the JSON-RPC protocol'
         assert correct_version, error
+
+    def validate_method(self, request):
+        """Validate request method."""
 
         correct_method = isinstance(request['method'], six.string_types)
         error = 'Incorrect name of the method to be invoked'
         assert correct_method, error
 
+    def validate_params(self, request):
+        """Validate request params."""
+
         if 'params' in request:
             correct_params = isinstance(request['params'], (list, dict))
             error = 'Incorrect parameter values'
             assert correct_params, error
+
+    def validate_id(self, request):
+        """Validate request id."""
 
         if 'id' in request:
             correct_id = isinstance(
@@ -97,77 +113,35 @@ class Service(object):
             error = 'Incorrect identifier'
             assert correct_id, error
 
+    def get_method(self, args):
+        """Get request method for service application."""
 
-def parse_error():
-    """JSON-RPC parse error."""
+        try:
+            method = self.app[args['method']]
+        except KeyError:
+            method_not_found(args['id'])
+        else:
+            return method
 
-    response = dumps({
-        'jsonrpc': '2.0',
-        'id': None,
-        'error': {
-            'code': -32700,
-            'message': 'Parse error',
-        },
-    })
-    return 400, response
+    def apply(self, method, args):
+        """Apply application method."""
 
+        try:
+            params = args['params']
+            if isinstance(params, dict):
+                result = method(**params)
+            else:
+                result = method(*params)
+        except Exception as error:
+            server_error(args['id'], error)
+        else:
+            return result
 
-def invalid_request(error):
-    """JSON-RPC invalid request error.
+    def make_response(self, args, result):
+        """Create response body from given result."""
 
-    :param error: request error
-    :type error: Exception
-
-    """
-
-    response = dumps({
-        'jsonrpc': '2.0',
-        'id': None,
-        'error': {
-            'code': -32600,
-            'message': 'Invalid Request',
-            'data': repr(error),
-        },
-    })
-    return 400, response
-
-
-def method_not_found(id):
-    """JSON-RPC method not found error.
-
-    :param id: JSON-RPC request id
-    :type id: int or str or None
-
-    """
-
-    response = dumps({
-        'jsonrpc': '2.0',
-        'id': id,
-        'error': {
-            'code': -32601,
-            'message': 'Method not found',
-        },
-    })
-    return 400, response
-
-
-def server_error(id, error):
-    """JSON-RPC server error.
-
-    :param id: JSON-RPC request id
-    :type id: int or str or None
-    :param error: server error
-    :type error: Exception
-
-    """
-
-    response = dumps({
-        'jsonrpc': '2.0',
-        'id': id,
-        'error': {
-            'code': -32000,
-            'message': 'Server error',
-            'data': repr(error),
-        },
-    })
-    return 500, response
+        return dumps({
+            'jsonrpc': '2.0',
+            'id': args['id'],
+            'result': result,
+        })
