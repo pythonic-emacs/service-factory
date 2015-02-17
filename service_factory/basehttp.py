@@ -21,7 +21,7 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
     error_message_format = ''
 
-    def log_request(*args):
+    def log_request(self, *args):
         """Ignore non error logging messages."""
 
         pass
