@@ -41,15 +41,11 @@ def test_call():
         'params': [1, 2],
         'id': 1,
     })
-    check_response(
-        service,
-        args,
-        200,
-        {
-            'jsonrpc': '2.0',
-            'result': 3,
-            'id': 1
-        })
+    check_response(service, args, 200, {
+        'jsonrpc': '2.0',
+        'result': 3,
+        'id': 1
+    })
 
 
 def test_dict_app():
@@ -62,15 +58,11 @@ def test_dict_app():
         'params': [1, 2],
         'id': 1,
     })
-    check_response(
-        service,
-        args,
-        200,
-        {
-            'jsonrpc': '2.0',
-            'result': 3,
-            'id': 1
-        })
+    check_response(service, args, 200, {
+        'jsonrpc': '2.0',
+        'result': 3,
+        'id': 1
+    })
 
 
 def test_parse_error():
@@ -78,18 +70,14 @@ def test_parse_error():
 
     service = Service({'add': lambda a, b: a + b})
     args = """{'method': 'name' """
-    check_response(
-        service,
-        args,
-        400,
-        {
-            'jsonrpc': '2.0',
-            'error': {
-                'code': -32700,
-                'message': 'Parse error',
-            },
-            'id': None,
-        })
+    check_response(service, args, 400, {
+        'jsonrpc': '2.0',
+        'error': {
+            'code': -32700,
+            'message': 'Parse error',
+        },
+        'id': None,
+    })
 
 
 def test_application_error():
@@ -99,19 +87,15 @@ def test_application_error():
         raise Exception('We are here.')
     service = Service([err])
     args = dumps({'jsonrpc': '2.0', 'method': 'err', 'params': [], 'id': 1})
-    check_response(
-        service,
-        args,
-        500,
-        {
-            'jsonrpc': '2.0',
-            'error': {
-                'code': -32000,
-                'message': 'Server error',
-                'data': repr(Exception('We are here.')),
-            },
-            'id': 1,
-        })
+    check_response(service, args, 500, {
+        'jsonrpc': '2.0',
+        'error': {
+            'code': -32000,
+            'message': 'Server error',
+            'data': repr(Exception('We are here.')),
+        },
+        'id': 1,
+    })
 
 
 def test_method_not_found():
@@ -124,18 +108,14 @@ def test_method_not_found():
         'params': [1, 2],
         'id': 1,
     })
-    check_response(
-        service,
-        args,
-        400,
-        {
-            'jsonrpc': '2.0',
-            'error': {
-                'code': -32601,
-                'message': 'Method not found',
-            },
-            'id': 1,
-        })
+    check_response(service, args, 400, {
+        'jsonrpc': '2.0',
+        'error': {
+            'code': -32601,
+            'message': 'Method not found',
+        },
+        'id': 1,
+    })
 
 
 def test_dict_params():
@@ -151,15 +131,11 @@ def test_dict_params():
         },
         'id': 1,
     })
-    check_response(
-        service,
-        args,
-        200,
-        {
-            'jsonrpc': '2.0',
-            'result': 3,
-            'id': 1
-        })
+    check_response(service, args, 200, {
+        'jsonrpc': '2.0',
+        'result': 3,
+        'id': 1
+    })
 
 
 def test_invalid_request():
@@ -171,18 +147,14 @@ def test_invalid_request():
         'method': 1,
         'params': 'bar',
     })
-    check_response(
-        service,
-        args,
-        400,
-        {
-            'jsonrpc': '2.0',
-            'error': {
-                'code': -32600,
-                'message': 'Invalid Request',
-                'data': repr(
-                    AssertionError(
-                        'Incorrect name of the method to be invoked')),
-            },
-            'id': None,
-        })
+    check_response(service, args, 400, {
+        'jsonrpc': '2.0',
+        'error': {
+            'code': -32600,
+            'message': 'Invalid Request',
+            'data': repr(
+                AssertionError(
+                    'Incorrect name of the method to be invoked')),
+        },
+        'id': None,
+    })
