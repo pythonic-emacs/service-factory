@@ -15,20 +15,32 @@ from json import dumps
 from .exceptions import ServiceException
 
 
+def error_emitter(func):
+    """Wrap given function into error emitter."""
+
+    def wrapper(*args, **kwargs):
+        status_code, response_body = func(*args, **kwargs)
+        raise ServiceException(status_code, dumps(response_body))
+
+    return wrapper
+
+
+@error_emitter
 def parse_error():
     """JSON-RPC parse error."""
 
-    response = dumps({
+    response = {
         'jsonrpc': '2.0',
         'id': None,
         'error': {
             'code': -32700,
             'message': 'Parse error',
         },
-    })
-    raise ServiceException(400, response)
+    }
+    return 400, response
 
 
+@error_emitter
 def invalid_request(error):
     """JSON-RPC invalid request error.
 
@@ -37,7 +49,7 @@ def invalid_request(error):
 
     """
 
-    response = dumps({
+    response = {
         'jsonrpc': '2.0',
         'id': None,
         'error': {
@@ -45,46 +57,48 @@ def invalid_request(error):
             'message': 'Invalid Request',
             'data': repr(error),
         },
-    })
-    raise ServiceException(400, response)
+    }
+    return 400, response
 
 
-def method_not_found(id):
+@error_emitter
+def method_not_found(request_id):
     """JSON-RPC method not found error.
 
-    :param id: JSON-RPC request id
-    :type id: int or str or None
+    :param request_id: JSON-RPC request id
+    :type request_id: int or str or None
 
     """
 
-    response = dumps({
+    response = {
         'jsonrpc': '2.0',
-        'id': id,
+        'id': request_id,
         'error': {
             'code': -32601,
             'message': 'Method not found',
         },
-    })
-    raise ServiceException(400, response)
+    }
+    return 400, response
 
 
-def server_error(id, error):
+@error_emitter
+def server_error(request_id, error):
     """JSON-RPC server error.
 
-    :param id: JSON-RPC request id
-    :type id: int or str or None
+    :param request_id: JSON-RPC request id
+    :type request_id: int or str or None
     :param error: server error
     :type error: Exception
 
     """
 
-    response = dumps({
+    response = {
         'jsonrpc': '2.0',
-        'id': id,
+        'id': request_id,
         'error': {
             'code': -32000,
             'message': 'Server error',
             'data': repr(error),
         },
-    })
-    raise ServiceException(500, response)
+    }
+    return 500, response
