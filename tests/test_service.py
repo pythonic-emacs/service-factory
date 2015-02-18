@@ -3,16 +3,20 @@ from __future__ import (
 from json import loads, dumps
 
 from service_factory.service import Service
+from service_factory.exceptions import ServiceException
 
 
 # Helpers.
 
 
-def check_response(response, status_code, expected_body):
+def check_response(service, args, status_code, expected_body):
     """Verify response against given arguments.
     Check jsonrpc specification compilance."""
 
-    code, body = response
+    try:
+        code, body = service(args)
+    except ServiceException as error:
+        code, body = error.args
     reply = loads(body)
     assert code == status_code
     assert reply['jsonrpc'] == '2.0'
@@ -38,7 +42,8 @@ def test_call():
         'id': 1,
     })
     check_response(
-        service(args),
+        service,
+        args,
         200,
         {
             'jsonrpc': '2.0',
@@ -58,7 +63,8 @@ def test_dict_app():
         'id': 1,
     })
     check_response(
-        service(args),
+        service,
+        args,
         200,
         {
             'jsonrpc': '2.0',
@@ -73,7 +79,8 @@ def test_parse_error():
     service = Service({'add': lambda a, b: a + b})
     args = """{'method': 'name' """
     check_response(
-        service(args),
+        service,
+        args,
         400,
         {
             'jsonrpc': '2.0',
@@ -93,7 +100,8 @@ def test_application_error():
     service = Service([err])
     args = dumps({'jsonrpc': '2.0', 'method': 'err', 'params': [], 'id': 1})
     check_response(
-        service(args),
+        service,
+        args,
         500,
         {
             'jsonrpc': '2.0',
@@ -117,7 +125,8 @@ def test_method_not_found():
         'id': 1,
     })
     check_response(
-        service(args),
+        service,
+        args,
         400,
         {
             'jsonrpc': '2.0',
@@ -143,7 +152,8 @@ def test_dict_params():
         'id': 1,
     })
     check_response(
-        service(args),
+        service,
+        args,
         200,
         {
             'jsonrpc': '2.0',
@@ -162,7 +172,8 @@ def test_invalid_request():
         'params': 'bar',
     })
     check_response(
-        service(args),
+        service,
+        args,
         400,
         {
             'jsonrpc': '2.0',
