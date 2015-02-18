@@ -15,6 +15,9 @@ try:
 except ImportError:
     from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
+from .errors import parse_error
+from .exceptions import ServiceException
+
 
 class HTTPRequestHandler(BaseHTTPRequestHandler):
 
@@ -27,14 +30,16 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         pass
 
     def do_POST(self):
-        content_len = self.headers.get('content-length')
-        if content_len is not None:
-            data = self.rfile.read(int(content_len))
-            data = data.decode('utf-8')
-            status, response = self.server.service(data)
-        else:
-            # Fixme: generate JSON-RPC response.
-            status, response = 400, 'Missing content-length header'
+        try:
+            content_len = self.headers.get('content-length')
+            if content_len.isnumeric():
+                data = self.rfile.read(int(content_len))
+                data = data.decode('utf-8')
+                status, response = self.server.service(data)
+            else:
+                parse_error()
+        except ServiceException as error:
+            status, response = error.args
 
         response = response.encode('utf-8')
         self.send_response(status)
