@@ -32,7 +32,7 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         try:
             content_len = self.headers.get('content-length')
-            if content_len.isnumeric():
+            if content_len.isnumeric():  # FIXME: not work
                 data = self.rfile.read(int(content_len))
                 data = data.decode('utf-8')
                 status, response = self.server.service(data)
