@@ -11,11 +11,11 @@
 from __future__ import (
     absolute_import, unicode_literals, division, print_function)
 
-from .providers.basehttp import BaseHTTPServer
+from .providers.basehttp import HTTPServiceProvider
 from .service import Service
 
 
-def service_factory(app, server_cls=BaseHTTPServer,
+def service_factory(app, server_cls=HTTPServiceProvider,
                     host='localhost', port='auto',
                     allowed_hosts=()):
     """Create service, start server."""

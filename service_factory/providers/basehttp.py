@@ -51,18 +51,14 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
 class HTTPServiceProvider(HTTPServer):
     """Base HTTP service provider."""
 
-    def __init__(self, service, *args, **kwargs):
-
-        self.service = service
-        super(HTTPServiceProvider, self).__init__(*args, **kwargs)
-
-
-class BaseHTTPServer(object):
-    """Service provider based on BaseHTTPHandler."""
-
-    def __init__(self, service, host, port, allowed_hosts):
+    def __init__(self, service, host, port, allowed_hosts, *args, **kwargs):
 
         self.service = service
         self.host = host
         self.port = port
         self.allowed_hosts = allowed_hosts
+        HTTPServer.__init__(
+            self,
+            (self.host, self.port),
+            HTTPRequestHandler,
+            *args, **kwargs)
