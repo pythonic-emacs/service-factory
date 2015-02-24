@@ -4,7 +4,8 @@ from socket import socket
 
 import pytest
 
-from service_factory.basehttp import HTTPRequestHandler, HTTPServiceProvider
+from service_factory.providers.basehttp import (
+    HTTPRequestHandler, HTTPServiceProvider)
 
 
 @pytest.skip('Not work yet')

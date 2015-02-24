@@ -1,6 +1,6 @@
 """
-    service_factory.basehttp
-    ~~~~~~~~~~~~~~~~~~~~~~~~
+    service_factory.providers.basehttp
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     This module define service provider based on the BaseHTTPHandler.
 
@@ -15,8 +15,8 @@ try:
 except ImportError:
     from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
-from .errors import parse_error
-from .exceptions import ServiceException
+from service_factory.errors import parse_error
+from service_factory.exceptions import ServiceException
 
 
 class HTTPRequestHandler(BaseHTTPRequestHandler):

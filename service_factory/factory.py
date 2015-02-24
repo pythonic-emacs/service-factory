@@ -11,7 +11,7 @@
 from __future__ import (
     absolute_import, unicode_literals, division, print_function)
 
-from .basehttp import BaseHTTPServer
+from .providers.basehttp import BaseHTTPServer
 from .service import Service
 
 
