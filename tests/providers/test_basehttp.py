@@ -1,6 +1,10 @@
 from __future__ import (
     absolute_import, unicode_literals, division, print_function)
 from io import BytesIO
+try:
+    from unittest.mock import Mock
+except ImportError:
+    from mock import Mock
 
 from service_factory.providers.basehttp import (
     HTTPRequestHandler, HTTPServiceProvider)
@@ -12,29 +16,19 @@ from service_factory.providers.basehttp import (
 def make_request(*lines):
     """Make request object."""
 
-    class RequestMock(object):
+    rfile = BytesIO('\r\n'.join(lines).encode())
+    wfile = Mock()
 
-        def __init__(self, request):
+    def makefile(mode, size):
 
-            self.request = request
+        if mode == 'rb':
+            return rfile
+        else:
+            return wfile
 
-        def makefile(self, mode, size):
+    kwargs = {'makefile.side_effect': makefile}
 
-            if mode == 'rb':
-                return BytesIO(self.request)
-            else:
-                return BytesIO()
-
-        def close(self, *args, **kwargs):
-
-            pass
-
-        def shutdown(self, *args, **kwargs):
-
-            pass
-
-    content = '\r\n'.join(lines).encode()
-    return RequestMock(content)
+    return Mock(**kwargs), rfile, wfile
 
 
 # Tests.
@@ -50,5 +44,5 @@ def test_post_request():
         8888,
         (),
         bind_and_activate=False)
-    request = make_request()
+    request, rfile, wfile = make_request()
     server.process_request(request, 'localhost')
