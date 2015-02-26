@@ -6,6 +6,8 @@ try:
 except ImportError:
     from mock import Mock
 
+from six.moves import reduce
+
 from service_factory.providers.basehttp import HTTPServiceProvider
 
 
@@ -30,6 +32,15 @@ def make_request(*lines):
     return Mock(**kwargs), rfile, wfile
 
 
+def read_response(wfile):
+    """Read response written into wfile."""
+
+    calls = wfile.write.mock_calls
+    lines = map(lambda x: x[1][0], calls)
+    text = reduce(lambda x, y: x + y, lines).decode()
+    return text.split('\r\n')
+
+
 # Tests.
 
 
@@ -45,13 +56,16 @@ def test_post_request():
         bind_and_activate=False)
     request, rfile, wfile = make_request(
         'POST / HTTP/1.1',
-        'User-Agent: curl/7.35.0',
         'Host: localhost:8888',
-        'Accept: */*',
-        'Content-type:application/json;',
+        'Content-Type:application/json;',
         'Content-Length: 62',
         '',
         '{"jsonrpc": "2.0", "method": "add", "params": [1, 2], "id": 1}',
         '')
     server.process_request(request, 'localhost')
-    # wfile.write.mock_calls
+    response = read_response(wfile)
+    assert 'HTTP/1.1 200 OK' in response
+    assert 'Content-Length: 62' in response
+    assert '' in response
+    assert ('{"jsonrpc": "2.0", "method": "add", '
+            '"params": [1, 2], "id": 1}') in response
