@@ -56,7 +56,7 @@ See it works:
 
 .. code:: bash
 
-    $ curl -X POST -d '{"jsonrpc": "2.0", "method": "add", "params": [1, 2], "id": 1}' -H 'Content-type:application/json;' http://localhost:9001/
+    $ curl -X POST -d '{"jsonrpc": "2.0", "method": "add", "params": [1, 2], "id": 1}' -H 'Content-Type:application/json;' http://localhost:9001/
 
 You can use any callable list from arbitrary module to run your
 application:
