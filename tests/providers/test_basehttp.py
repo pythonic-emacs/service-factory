@@ -7,8 +7,6 @@ try:
 except ImportError:
     from mock import Mock
 
-from six.moves import reduce
-
 from service_factory.providers.basehttp import HTTPServiceProvider
 
 
@@ -38,7 +36,7 @@ def read_response(wfile):
 
     calls = wfile.write.mock_calls
     lines = map(lambda x: x[1][0], calls)
-    text = reduce(lambda x, y: x + y, lines).decode()
+    text = b''.join(lines).decode()
     return text.split('\r\n')
 
 
