@@ -12,20 +12,11 @@ from __future__ import (
     absolute_import, unicode_literals, division, print_function)
 from json import dumps
 
+import six
+
 from .exceptions import ServiceException
 
 
-def error_emitter(func):
-    """Wrap given function into error emitter."""
-
-    def wrapper(*args, **kwargs):
-        status_code, response_body = func(*args, **kwargs)
-        raise ServiceException(status_code, dumps(response_body))
-
-    return wrapper
-
-
-@error_emitter
 def parse_error():
     """JSON-RPC parse error."""
 
@@ -37,10 +28,9 @@ def parse_error():
             'message': 'Parse error',
         },
     }
-    return 400, response
+    raise ServiceException(400, dumps(response))
 
 
-@error_emitter
 def invalid_request(error):
     """JSON-RPC invalid request error.
 
@@ -58,10 +48,9 @@ def invalid_request(error):
             'data': repr(error),
         },
     }
-    return 400, response
+    six.raise_from(ServiceException(400, dumps(response)), error)
 
 
-@error_emitter
 def method_not_found(request_id):
     """JSON-RPC method not found error.
 
@@ -78,10 +67,9 @@ def method_not_found(request_id):
             'message': 'Method not found',
         },
     }
-    return 400, response
+    raise ServiceException(400, dumps(response))
 
 
-@error_emitter
 def server_error(request_id, error):
     """JSON-RPC server error.
 
@@ -101,4 +89,4 @@ def server_error(request_id, error):
             'data': repr(error),
         },
     }
-    return 500, response
+    six.raise_from(ServiceException(500, dumps(response)), error)
