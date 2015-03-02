@@ -15,11 +15,11 @@ from .providers.basehttp import HTTPServiceProvider
 from .service import Service
 
 
-def service_factory(app, server_cls=HTTPServiceProvider,
+def service_factory(app, privider_cls=HTTPServiceProvider,
                     host='localhost', port='auto',
                     allowed_hosts=()):
     """Create service, start server."""
 
     service = Service(app)
-    server = server_cls(service, host, port, allowed_hosts)
-    return server
+    server = privider_cls(service, host, port, allowed_hosts)
+    server.serve_forever()
