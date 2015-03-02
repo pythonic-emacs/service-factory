@@ -10,6 +10,7 @@
 
 from __future__ import (
     absolute_import, unicode_literals, division, print_function)
+from traceback import print_exc
 
 from six.moves.BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
@@ -37,6 +38,8 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
             else:
                 parse_error()
         except ServiceException as error:
+            self.log_error('=' * 80)
+            print_exc()
             status, response = error.args
 
         response = response.encode('utf-8')

@@ -70,7 +70,6 @@ application:
 TODO
 ----
 
-* log traceback
 * process all errors codes
 * batch processing
 * WSGI support
