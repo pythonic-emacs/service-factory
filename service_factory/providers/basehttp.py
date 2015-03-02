@@ -10,10 +10,8 @@
 
 from __future__ import (
     absolute_import, unicode_literals, division, print_function)
-try:
-    from http.server import BaseHTTPRequestHandler, HTTPServer
-except ImportError:
-    from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+
+from six.moves.BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
 from service_factory.errors import parse_error
 from service_factory.exceptions import ServiceException
