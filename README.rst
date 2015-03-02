@@ -43,7 +43,7 @@ Service factory in a nutshell:
     app = [add, mul]
 
     if __name__ == '__main__':
-        service_factory(app, iface='localhost', port='auto')
+        service_factory(app, host='localhost', port='auto')
 
 Run this as usual python file:
 
@@ -63,16 +63,19 @@ application:
 
 .. code:: bash
 
-    $ python -m service_factory calc:app --iface=localhost --port=auto
+    $ python -m service_factory calc:app --host=localhost --port=auto
     # or
-    $ service_factory calc:app --iface=localhost --port=auto
+    $ service_factory calc:app --host=localhost --port=auto
 
 TODO
 ----
 
 * process all errors codes
 * batch processing
-* WSGI support
-* customizable message for port number report
-* customizable server classes
+* notifications
+* WSGI provider
+* tornado provider
+* httpaio provider
 * --port-file option
+* port='auto' option with customizable message
+* console entry point
