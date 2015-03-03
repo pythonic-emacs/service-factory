@@ -52,7 +52,7 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
 class HTTPServiceProvider(HTTPServer):
     """Base HTTP service provider."""
 
-    def __init__(self, service, host, port, allowed_hosts, *args, **kwargs):
+    def __init__(self, service, host, port, allowed_hosts):
 
         self.service = service
         self.host = host
@@ -61,5 +61,4 @@ class HTTPServiceProvider(HTTPServer):
         HTTPServer.__init__(
             self,
             (self.host, self.port),
-            HTTPRequestHandler,
-            *args, **kwargs)
+            HTTPRequestHandler)

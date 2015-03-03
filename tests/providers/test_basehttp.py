@@ -23,9 +23,8 @@ def make_server(service):
     return HTTPServiceProvider(
         service,
         'localhost',
-        8888,
-        (),
-        bind_and_activate=False)
+        9000,
+        ())
 
 
 def make_request(*lines):
@@ -77,6 +76,7 @@ def test_post_request():
     assert '' in response
     assert ('{"jsonrpc": "2.0", "method": "add", '
             '"params": [1, 2], "id": 1}') in response
+    server.server_close()
 
 
 def test_missed_content_length():
@@ -104,6 +104,7 @@ def test_missed_content_length():
             'message': 'Parse error',
         },
     }
+    server.server_close()
 
 
 def test_log_traceback(capsys):
@@ -123,3 +124,4 @@ def test_log_traceback(capsys):
     server.process_request(request, 'localhost')
     out, err = capsys.readouterr()
     assert 'ServiceException' in err
+    server.server_close()
