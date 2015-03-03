@@ -1,11 +1,8 @@
 from __future__ import (
     absolute_import, unicode_literals, division, print_function)
-from io import BytesIO
+
+import socket
 from json import loads
-try:
-    from unittest.mock import Mock
-except ImportError:
-    from mock import Mock
 
 from service_factory.exceptions import ServiceException
 from service_factory.providers.basehttp import HTTPServiceProvider
@@ -27,31 +24,21 @@ def make_server(service):
         ())
 
 
-def make_request(*lines):
-    """Make request object."""
+def send(addr, *body):
+    """Connect to the address, send body."""
 
-    rfile = BytesIO('\r\n'.join(lines).encode())
-    wfile = Mock()
-
-    def makefile(mode, size):
-
-        if mode == 'rb':
-            return rfile
-        else:
-            return wfile
-
-    kwargs = {'makefile.side_effect': makefile}
-
-    return Mock(**kwargs), rfile, wfile
+    connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    connection.connect(addr)
+    connection.sendall('\r\n'.join(body).encode())
+    return connection
 
 
-def read_response(wfile):
-    """Read response written into wfile."""
+def recv(connection):
+    """Receive response from connection, close connection."""
 
-    calls = wfile.write.mock_calls
-    lines = map(lambda x: x[1][0], calls)
-    text = b''.join(lines).decode()
-    return text.split('\r\n')
+    response = connection.recv(65535)
+    connection.close()
+    return response.decode().split('\r\n')
 
 
 # Tests.
@@ -61,7 +48,8 @@ def test_post_request():
     """Check server can handle single post request."""
 
     server = make_server(lambda x: (200, x))
-    request, rfile, wfile = make_request(
+    connection = send(
+        ('localhost', 9000),
         'POST / HTTP/1.1',
         'Host: localhost:8888',
         'Content-Type:application/json;',
@@ -69,8 +57,8 @@ def test_post_request():
         '',
         '{"jsonrpc": "2.0", "method": "add", "params": [1, 2], "id": 1}',
         '')
-    server.process_request(request, 'localhost')
-    response = read_response(wfile)
+    server.handle_request()
+    response = recv(connection)
     assert 'HTTP/1.1 200 OK' in response
     assert 'Content-Length: 62' in response
     assert '' in response
@@ -83,15 +71,16 @@ def test_missed_content_length():
     """Check server can handle single post request."""
 
     server = make_server(lambda x: (200, x))
-    request, rfile, wfile = make_request(
+    connection = send(
+        ('localhost', 9000),
         'POST / HTTP/1.1',
         'Host: localhost:8888',
         'Content-Type:application/json;',
         '',
         '{"jsonrpc": "2.0", "method": "add", "params": [1, 2], "id": 1}',
         '')
-    server.process_request(request, 'localhost')
-    response = read_response(wfile)
+    server.handle_request()
+    response = recv(connection)
     message = response[-1]
     assert 'HTTP/1.1 400 Bad Request' in response
     assert 'Content-Length: {0}'.format(len(message)) in response
@@ -113,7 +102,8 @@ def test_log_traceback(capsys):
     def app(*args, **kwargs):
         raise ServiceException(0, '')
     server = make_server(app)
-    request, rfile, wfile = make_request(
+    connection = send(
+        ('localhost', 9000),
         'POST / HTTP/1.1',
         'Host: localhost:8888',
         'Content-Type:application/json;',
@@ -121,7 +111,8 @@ def test_log_traceback(capsys):
         '',
         '{"jsonrpc": "2.0", "method": "add", "params": [1, 2], "id": 1}',
         '')
-    server.process_request(request, 'localhost')
+    server.handle_request()
+    recv(connection)
     out, err = capsys.readouterr()
     assert 'ServiceException' in err
     server.server_close()
