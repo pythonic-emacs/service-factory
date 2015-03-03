@@ -75,7 +75,7 @@ TODO
 * notifications
 * WSGI provider
 * tornado provider
-* httpaio provider
+* aiohttp provider
 * --port-file option
 * port='auto' option with customizable message
 * console entry point

@@ -17,11 +17,7 @@ def make_server(service):
     This command doesn't bind and activate server socket.
     """
 
-    return HTTPServiceProvider(
-        service,
-        'localhost',
-        9000,
-        ())
+    return HTTPServiceProvider(service, 'localhost', 9000, ())
 
 
 def send(addr, *body):
