@@ -77,5 +77,5 @@ TODO
 * tornado provider
 * aiohttp provider
 * --port-file option
-* port='auto' option with customizable message
+* customizable startup message
 * console entry point

@@ -112,3 +112,16 @@ def test_log_traceback(capsys):
     out, err = capsys.readouterr()
     assert 'ServiceException' in err
     server.server_close()
+
+
+def test_port_auto_binding(capsys):
+    """Check we can select port automatically."""
+
+    service = lambda x: x
+    server_a = HTTPServiceProvider(service, 'localhost', 9000, ())
+    server_b = HTTPServiceProvider(service, 'localhost', 9001, ())
+    server_c = HTTPServiceProvider(service, 'localhost', 'auto', ())
+    assert 9002 == server_c.port
+    server_a.server_close()
+    server_b.server_close()
+    server_c.server_close()

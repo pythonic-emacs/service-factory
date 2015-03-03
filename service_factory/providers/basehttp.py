@@ -10,6 +10,8 @@
 
 from __future__ import (
     absolute_import, unicode_literals, division, print_function)
+
+import socket
 from traceback import print_exc
 
 from six.moves.BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
@@ -58,7 +60,24 @@ class HTTPServiceProvider(HTTPServer):
         self.host = host
         self.port = port
         self.allowed_hosts = allowed_hosts
-        HTTPServer.__init__(
-            self,
-            (self.host, self.port),
-            HTTPRequestHandler)
+        self.bind()
+
+    def bind(self):
+        """Bind and activate HTTP server."""
+
+        if self.port != 'auto':
+            self.do_bind()
+        else:
+            self.port = 9000
+            while True:
+                try:
+                    self.do_bind()
+                except (OSError, socket.error):
+                    self.port += 1
+                else:
+                    break
+
+    def do_bind(self):
+        """Perform HTTP server binding and activation."""
+
+        HTTPServer.__init__(self, (self.host, self.port), HTTPRequestHandler)
