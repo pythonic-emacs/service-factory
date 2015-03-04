@@ -12,6 +12,7 @@ from __future__ import (
     absolute_import, unicode_literals, division, print_function)
 
 import socket
+import sys
 from traceback import print_exc
 
 from six.moves.BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
@@ -54,12 +55,14 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
 class HTTPServiceProvider(HTTPServer):
     """Base HTTP service provider."""
 
-    def __init__(self, service, host, port, allowed_hosts):
+    def __init__(self, service, host, port, allowed_hosts,
+                 report_message='service factory port {port}'):
 
         self.service = service
         self.host = host
         self.port = port
         self.allowed_hosts = allowed_hosts
+        self.report_message = report_message
         self.bind()
 
     def bind(self):
@@ -76,8 +79,19 @@ class HTTPServiceProvider(HTTPServer):
                     self.port += 1
                 else:
                     break
+            self.report()
 
     def do_bind(self):
         """Perform HTTP server binding and activation."""
 
         HTTPServer.__init__(self, (self.host, self.port), HTTPRequestHandler)
+
+    def report(self):
+        """Report startup info to stdout."""
+
+        print(self.report_message.format(
+            service=self.service,
+            host=self.host,
+            port=self.port,
+            allowed_hosts=self.allowed_hosts))
+        sys.stdout.flush()

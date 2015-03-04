@@ -125,3 +125,13 @@ def test_port_auto_binding(capsys):
     server_a.server_close()
     server_b.server_close()
     server_c.server_close()
+
+
+def test_port_report(capsys):
+    """Check we report used port numder in case of automatic port binding."""
+
+    service = lambda x: x
+    server = HTTPServiceProvider(service, 'localhost', 'auto', ())
+    out, err = capsys.readouterr()
+    assert 'service factory port 9000' in out
+    server.server_close()

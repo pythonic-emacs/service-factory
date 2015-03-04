@@ -15,11 +15,16 @@ from .providers.basehttp import HTTPServiceProvider
 from .service import Service
 
 
-def service_factory(app, privider_cls=HTTPServiceProvider,
-                    host='localhost', port='auto',
-                    allowed_hosts=()):
-    """Create service, start server."""
+def service_factory(app, provider_cls=HTTPServiceProvider, *args, **kwargs):
+    """Create service, start server.
+
+    :param app: application to instantiate a service
+    :param provider_cls: server class provide a service
+    :param args: positional args passed to provider constructor
+    :param kwargs: keyword args passed to provider constructor
+
+    """
 
     service = Service(app)
-    server = privider_cls(service, host, port, allowed_hosts)
+    server = provider_cls(service, *args, **kwargs)
     server.serve_forever()
