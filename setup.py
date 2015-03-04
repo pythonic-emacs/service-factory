@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-readme = open('README.rst').read()
+readme = open('README.rst').read() + open('CHANGELOG.rst').read()
 
 setup(name='service_factory',
       version='0.1.0',
