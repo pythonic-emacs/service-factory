@@ -4,6 +4,11 @@
 Changelog
 ---------
 
+0.1.2 (2015-03-05)
+++++++++++++++++++
+
+- Remove allowed hosts parameters from ``service_factory`` function.
+
 0.1.1 (2015-03-05)
 ++++++++++++++++++
 
