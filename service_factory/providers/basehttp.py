@@ -55,13 +55,12 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
 class HTTPServiceProvider(HTTPServer):
     """Base HTTP service provider."""
 
-    def __init__(self, service, host, port, allowed_hosts,
+    def __init__(self, service, host, port,
                  report_message='service factory port {port}'):
 
         self.service = service
         self.host = host
         self.port = port
-        self.allowed_hosts = allowed_hosts
         self.report_message = report_message
         self.bind()
 
@@ -92,6 +91,5 @@ class HTTPServiceProvider(HTTPServer):
         print(self.report_message.format(
             service=self.service,
             host=self.host,
-            port=self.port,
-            allowed_hosts=self.allowed_hosts))
+            port=self.port))
         sys.stdout.flush()

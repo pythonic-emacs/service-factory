@@ -13,10 +13,10 @@ def test_service_factory():
     app = [lambda x: x]
 
     class TestProvider(object):
-        def __init__(self, *args, **kwargs):
+        def __init__(self, service, host, port, report_message=''):
             pass
 
         def serve_forever(self):
             pass
 
-    service_factory(app, 'localhost', 'auto', (), provider_cls=TestProvider)
+    service_factory(app, 'localhost', 'auto', provider_cls=TestProvider)

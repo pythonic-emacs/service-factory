@@ -17,7 +17,7 @@ def make_server(service):
     This command doesn't bind and activate server socket.
     """
 
-    return HTTPServiceProvider(service, 'localhost', 9000, ())
+    return HTTPServiceProvider(service, 'localhost', 9000)
 
 
 def send(addr, *body):
@@ -118,9 +118,9 @@ def test_port_auto_binding(capsys):
     """Check we can select port automatically."""
 
     service = lambda x: x
-    server_a = HTTPServiceProvider(service, 'localhost', 9000, ())
-    server_b = HTTPServiceProvider(service, 'localhost', 9001, ())
-    server_c = HTTPServiceProvider(service, 'localhost', 'auto', ())
+    server_a = HTTPServiceProvider(service, 'localhost', 9000)
+    server_b = HTTPServiceProvider(service, 'localhost', 9001)
+    server_c = HTTPServiceProvider(service, 'localhost', 'auto')
     assert 9002 == server_c.port
     server_a.server_close()
     server_b.server_close()
@@ -131,7 +131,7 @@ def test_port_report(capsys):
     """Check we report used port numder in case of automatic port binding."""
 
     service = lambda x: x
-    server = HTTPServiceProvider(service, 'localhost', 'auto', ())
+    server = HTTPServiceProvider(service, 'localhost', 'auto')
     out, err = capsys.readouterr()
     assert 'service factory port 9000' in out
     server.server_close()
