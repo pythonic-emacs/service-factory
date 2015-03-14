@@ -78,3 +78,7 @@ TODO
 * aiohttp provider
 * --port-file option
 * console entry point
+* make providers act as context managers
+* ``user_error(code, message, data=None)``
+* WSGI authorization
+* sphinx docs
