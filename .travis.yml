@@ -1,10 +1,13 @@
 language: python
-
+cache:
+  directories:
+  - $HOME/.cache/pip
+before_cache:
+  - rm -f $HOME/.cache/pip/log/debug.log
 install:
+  - pip install -U pip wheel
   - pip install tox coveralls
-
 script:
   - tox
-
 after_success:
   - coveralls
