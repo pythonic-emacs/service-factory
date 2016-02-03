@@ -13,7 +13,7 @@ setup(name='service_factory',
       author_email='proofit404@gmail.com',
       maintainer='Artem Malyshev',
       maintainer_email='proofit404@gmail.com',
-      packages=find_packages(exclude=['tests*']),
+      packages=find_packages(),
       install_requires=['six'],
       classifiers=[
           'Development Status :: 4 - Beta',
