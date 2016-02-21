@@ -4,7 +4,7 @@
 
     JSON RPC service factory for Python.
 
-    :copyright: (c) 2015 by Artem Malyshev.
+    :copyright: (c) 2015-2016 by Artem Malyshev.
     :license: GPL3, see LICENSE for more details.
 """
 
