@@ -82,3 +82,6 @@ TODO
 * ``user_error(code, message, data=None)``
 * WSGI authorization
 * sphinx docs
+* Django user permissions for rpc method
+* Celery service implementation
+* RQ service implementation
