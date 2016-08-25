@@ -15,8 +15,7 @@ import socket
 import sys
 from traceback import print_exc
 
-from six.moves.BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
-
+from service_factory.compat import BaseHTTPRequestHandler, HTTPServer
 from service_factory.errors import parse_error
 from service_factory.exceptions import ServiceException
 

@@ -12,8 +12,6 @@ from __future__ import (
     absolute_import, unicode_literals, division, print_function)
 from json import dumps
 
-import six
-
 from .exceptions import ServiceException
 
 
@@ -48,7 +46,7 @@ def invalid_request(error):
             'data': repr(error),
         },
     }
-    six.raise_from(ServiceException(400, dumps(response)), error)
+    raise ServiceException(400, dumps(response))
 
 
 def method_not_found(request_id):
@@ -89,4 +87,4 @@ def server_error(request_id, error):
             'data': repr(error),
         },
     }
-    six.raise_from(ServiceException(500, dumps(response)), error)
+    raise ServiceException(500, dumps(response))

@@ -11,7 +11,7 @@
 from __future__ import (
     absolute_import, unicode_literals, division, print_function)
 
-import six
+from .compat import string_types
 
 
 def validate_version(request):
@@ -25,7 +25,7 @@ def validate_version(request):
 def validate_method(request):
     """Validate request method."""
 
-    correct_method = isinstance(request['method'], six.string_types)
+    correct_method = isinstance(request['method'], string_types)
     error = 'Incorrect name of the method to be invoked'
     assert correct_method, error
 
@@ -45,6 +45,7 @@ def validate_id(request):
     if 'id' in request:
         correct_id = isinstance(
             request['id'],
-            (six.string_types, int, None))
+            (string_types, int, None),
+        )
         error = 'Incorrect identifier'
         assert correct_id, error
