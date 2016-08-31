@@ -69,19 +69,13 @@ class HTTPServiceProvider(HTTPServer):
         if self.port != 'auto':
             self.do_bind()
         else:
-            self.port = 9000
-            while True:
-                try:
-                    self.do_bind()
-                except (OSError, socket.error):
-                    self.port += 1
-                else:
-                    break
+            self.port = 0
+            self.do_bind()
+            self.port = self.server_port
             self.report()
 
     def do_bind(self):
         """Perform HTTP server binding and activation."""
-
         HTTPServer.__init__(self, (self.host, self.port), HTTPRequestHandler)
 
     def report(self):
