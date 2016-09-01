@@ -4,6 +4,11 @@
 Changelog
 ---------
 
+0.1.4 (2016-09-02)
+++++++++++++++++++
+
+- Use 0 port value for automatic port detection.
+
 0.1.3 (2016-08-25)
 ++++++++++++++++++
 
