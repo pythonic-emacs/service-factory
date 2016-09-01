@@ -1,5 +1,6 @@
 from __future__ import (
-    absolute_import, unicode_literals, division, print_function)
+    absolute_import, unicode_literals, division, print_function,
+)
 
 from service_factory.factory import service_factory
 
@@ -19,4 +20,4 @@ def test_service_factory():
         def serve_forever(self):
             pass
 
-    service_factory(app, 'localhost', 'auto', provider_cls=TestProvider)
+    service_factory(app, 'localhost', 0, provider_cls=TestProvider)

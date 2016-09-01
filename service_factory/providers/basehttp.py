@@ -9,7 +9,8 @@
 """
 
 from __future__ import (
-    absolute_import, unicode_literals, division, print_function)
+    absolute_import, unicode_literals, division, print_function,
+)
 
 import socket
 import sys
@@ -62,33 +63,22 @@ class HTTPServiceProvider(HTTPServer):
         self.port = port
         self.report_message = report_message
         self.bind()
+        self.report()
 
     def bind(self):
         """Bind and activate HTTP server."""
 
-        if self.port != 'auto':
-            self.do_bind()
-        else:
-            self.port = 9000
-            while True:
-                try:
-                    self.do_bind()
-                except (OSError, socket.error):
-                    self.port += 1
-                else:
-                    break
-            self.report()
-
-    def do_bind(self):
-        """Perform HTTP server binding and activation."""
-
         HTTPServer.__init__(self, (self.host, self.port), HTTPRequestHandler)
+        self.port = self.server_port
 
     def report(self):
         """Report startup info to stdout."""
 
-        print(self.report_message.format(
-            service=self.service,
-            host=self.host,
-            port=self.port))
+        print(
+            self.report_message.format(
+                service=self.service,
+                host=self.host,
+                port=self.port,
+            )
+        )
         sys.stdout.flush()

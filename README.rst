@@ -43,7 +43,7 @@ Service factory in a nutshell:
     app = [add, mul]
 
     if __name__ == '__main__':
-        service_factory(app, host='localhost', port='auto')
+        service_factory(app, host='localhost', port=0)
 
 Run this as usual python file:
 
