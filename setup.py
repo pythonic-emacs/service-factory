@@ -14,6 +14,7 @@ setup(name='service_factory',
       maintainer='Artem Malyshev',
       maintainer_email='proofit404@gmail.com',
       packages=find_packages(),
+      zip_safe=False,
       classifiers=[
           'Development Status :: 4 - Beta',
           'Intended Audience :: Developers',
